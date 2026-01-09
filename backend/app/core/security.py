@@ -7,6 +7,7 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.core.config import settings
+import secrets
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -18,8 +19,20 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
+    """
+    Hash a password.
+
+    Bcrypt (used by passlib) only supports passwords up to 72 bytes.
+    To avoid runtime errors, we truncate longer passwords.
+    """
+    # Ensure password is a string
+    if not isinstance(password, str):
+        password = str(password)
+
+    # Truncate to 72 characters to satisfy bcrypt limit
+    safe_password = password[:72]
+
+    return pwd_context.hash(safe_password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -78,3 +91,12 @@ def decode_token(token: str) -> Optional[dict]:
     except JWTError:
         return None
 
+
+def generate_verification_token() -> str:
+    """
+    Generate a secure random token for email verification or password reset
+    
+    Returns:
+        URL-safe random token string
+    """
+    return secrets.token_urlsafe(32)

@@ -45,7 +45,11 @@ async def health_check():
     }
 
 
-# Include API routers (will be added in future steps)
+# Include API routers
+from app.api.v1 import auth
+app.include_router(auth.router, prefix=settings.API_V1_PREFIX, tags=["authentication"])
+
+# Future routers (to be added)
 # from app.api.v1 import students, alumni, requests, introductions, outcomes
 # app.include_router(students.router, prefix=settings.API_V1_PREFIX, tags=["students"])
 # app.include_router(alumni.router, prefix=settings.API_V1_PREFIX, tags=["alumni"])
@@ -53,4 +57,6 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
+
 

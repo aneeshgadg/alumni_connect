@@ -8,10 +8,13 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 # Create synchronous engine for Alembic and migrations
+# Use DATABASE_URL (synchronous) for migrations and standard operations
 engine = create_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,
+    pool_pre_ping=True,  # Verify connections before using
     echo=settings.DEBUG,  # Log SQL queries in debug mode
+    pool_size=5,
+    max_overflow=10,
 )
 
 # Create session factory
@@ -25,6 +28,11 @@ def get_db():
     """
     Dependency for getting database session
     Use this in FastAPI route dependencies
+    
+    Usage:
+        @app.get("/items")
+        def get_items(db: Session = Depends(get_db)):
+            ...
     """
     db = SessionLocal()
     try:
@@ -32,3 +40,11 @@ def get_db():
     finally:
         db.close()
 
+
+def init_db():
+    """
+    Initialize database - create all tables
+    This is mainly for development/testing.
+    In production, use Alembic migrations.
+    """
+    Base.metadata.create_all(bind=engine)

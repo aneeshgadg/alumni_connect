@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-  },
+  // Backend URL is server-side only (used in API routes)
+  // No need to expose to client
 }
 
 module.exports = nextConfig
+
+
 

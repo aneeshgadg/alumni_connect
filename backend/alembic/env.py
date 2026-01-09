@@ -17,8 +17,7 @@ from app.core.database import Base
 from app.core.config import settings
 
 # Import all models so Alembic can detect them
-# (We'll add these as we create them)
-# from app.models import user, student, alumni
+from app.models import User, Student, Alumni
 
 # this is the Alembic Config object
 config = context.config
@@ -69,4 +68,5 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
 
